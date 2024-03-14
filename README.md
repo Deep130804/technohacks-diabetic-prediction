@@ -1,26 +1,32 @@
-This project aims to predict the likelihood of an individual developing diabetes based on certain health parameters and historical data. By utilizing machine learning algorithms, we can provide an early prediction that can help individuals take preventive measures and seek medical advice proactively.
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
-Dataset
-The dataset used for this project contains information such as glucose levels, blood pressure, BMI, and other relevant health indicators. It has been preprocessed and cleaned to ensure accurate predictions.
+# Load the dataset
+data = pd.read_csv('diabetes.csv')
 
-Model
-We have trained a machine learning model using the dataset to predict the probability of an individual developing diabetes. The model has been evaluated using various metrics and techniques to ensure its reliability.
+# Split the data into features (X) and target variable (y)
+X = data.drop('Outcome', axis=1)
+y = data['Outcome']
 
-Usage
-To use the prediction model, simply input the required health parameters for an individual, and the model will output the likelihood of that person developing diabetes. Feel free to experiment with different inputs and test the accuracy of the predictions.
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-Dependencies
-Python 3.x
-NumPy
-Pandas
-Scikit-learn
-Matplotlib
-Jupyter Notebook (for running the provided notebooks)
-How to Run
-Clone this repository to your local machine.
-Install the required dependencies using pip install -r requirements.txt.
-Run the Jupyter notebook diabetic_prediction.ipynb to see the model in action and make predictions.
-Contribution
-If you would like to contribute to this project, feel free to fork the repository and submit a pull request with your changes. Any contributions to improve the model's accuracy or efficiency are highly appreciated.
+# Normalize the features
+scaler = MinMaxScaler()
+X_train_normalized = scaler.fit_transform(X_train)
+X_test_normalized = scaler.transform(X_test)
 
-Feel free to customize this template to fit the specifics of your project!
+# Train a Random Forest classifier
+rf_clf = RandomForestClassifier(random_state=42)
+rf_clf.fit(X_train_normalized, y_train)
+
+# Make predictions on the testing data
+y_pred = rf_clf.predict(X_test_normalized)
+
+# Evaluate the model's accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+
